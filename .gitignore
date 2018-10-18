@@ -1,0 +1,14 @@
+
+#ignore vagrant build output files
+.DS_Store
+.vagrant/*
+*.box
+*.dev
+*.env
+
+# ignore ruby files
+Gemfile.lock
+
+
+# misc
+scratch/*
