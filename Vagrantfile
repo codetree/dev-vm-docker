@@ -7,15 +7,21 @@ Vagrant.configure("2") do |config|
   config.vm.box_check_update = true
 
   config.vm.provider "virtualbox" do |vb|
-      vb.name = "dev-vm-rails5-base"
+      vb.name = "dev-vm-docker"
       vb.memory = "2048"
       vb.cpus = 1
       vb.customize ['modifyvm', :id, '--vram', '16']
-      vb.customize ['modifyvm', :id, '--vdre', 'off']
+      vb.customize ['modifyvm', :id, '--vrde', 'off']
       vb.customize [ "guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 5000 ]
   end
 
+  config.dns.tld = 'dev'
+  config.vm.hostname = 'dev-vm'
+
+  config.vm.network 'private_network', ip: '192.168.101.99'
+
   config.vm.synced_folder "../", "/home/vagrant/repos"
+  config.vm.synced_folder '.', '/vagrant'
 
   config.ssh.forward_agent = true
   config.ssh.insert_key = false
@@ -26,6 +32,18 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell",
                       env: { DEBIAN_FRONTEND: "noninteractive" },
                       inline: <<-SHELL
+
+    # add yarn, docker, and heroku keys and repositories
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+    add-apt-repository "deb https://dl.yarnpkg.com/debian/ stable main"
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+    sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main"
+    curl -sSL https://cli-assets.heroku.com/apt/release.key | sudo apt-key add -
+    sudo add-apt-repository "deb https://cli-assets.heroku.com/branches/stable/apt ./"
+
+
     # update packages
     apt-get update -y
 
@@ -38,6 +56,14 @@ Vagrant.configure("2") do |config|
     # shell and rbenv dependencies
     apt-get install -y build-essential zsh zsh-syntax-highlighting
 
+    # install docker & docker-compose
+    apt-get install -y docker-ce
+    usermod -aG docker vagrant
+    curl -L "https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose
+    docker --version
+    docker-compose --version
+
     # ruby dependencies
     apt-get install -y libssl-dev libreadline-dev zlib1g-dev
 
@@ -45,20 +71,13 @@ Vagrant.configure("2") do |config|
     apt-get install -y libyaml-dev libsqlite3-dev sqlite3
 
     # install yarn to enable webpack
-    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-
-    apt-get update -y && apt-get install -y yarn
+    apt-get install -y yarn
 
     # postgres & redis clients
-    apt-get install -y postgresql-client libpq-dev redis-tools
+    apt-get install -y postgresql-client-10 libpq-dev redis-tools
 
     # add current heroku tools
-    sudo apt-get install -y software-properties-common
-    sudo add-apt-repository "deb https://cli-assets.heroku.com/branches/stable/apt ./"
-    curl -sSL https://cli-assets.heroku.com/apt/release.key | sudo apt-key add -
-    sudo apt-get update -y
-    sudo apt-get install -y  heroku
+    apt-get install -y  heroku
   SHELL
 
   config.vm.provision "shell",
@@ -115,9 +134,13 @@ Vagrant.configure("2") do |config|
     #update default shell to zsh
     sudo sed -i -e 's|/home/vagrant:/bin/bash|/home/vagrant:/usr/bin/zsh|g' /etc/passwd
 
-    #compress file as much as possible
-    sudo apt-get clean
-    sudo dd if=/dev/zero of=/EMPTY bs=1M
-    sudo rm -f /EMPTY
+    # copy user experience files
+    cp /vagrant/setup/.Guardfile ~/.Guardfile
+    cp /vagrant/setup/.gitconfig ~/.gitconfig
+
+    # compress file as much as possible to prepare for upload
+    # sudo apt-get clean
+    # sudo dd if=/dev/zero of=/EMPTY bs=1M
+    # sudo rm -f /EMPTY
   SCRIPT
 end
