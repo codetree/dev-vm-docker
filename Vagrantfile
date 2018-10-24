@@ -8,14 +8,16 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider "virtualbox" do |vb|
       vb.name = "dev-vm-docker"
-      vb.memory = "2048"
-      vb.cpus = 1
+      vb.memory = "1536"
+      vb.cpus = 2
       vb.customize ['modifyvm', :id, '--vram', '16']
       vb.customize ['modifyvm', :id, '--vrde', 'off']
+      vb.customize ['modifyvm', :id, '--natdnshostresolver1', 'on']
+      vb.customize ['modifyvm', :id, '--natdnsproxy1', 'on']
       vb.customize [ "guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 5000 ]
-  end
+end
 
-  config.dns.tld = 'dev'
+  config.dns.tld = 'test'
   config.vm.hostname = 'dev-vm'
 
   config.vm.network 'private_network', ip: '192.168.101.99'
@@ -24,7 +26,6 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder '.', '/vagrant'
 
   config.ssh.forward_agent = true
-  config.ssh.insert_key = false
 
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
@@ -60,7 +61,7 @@ Vagrant.configure("2") do |config|
     apt-get install -y docker-ce
     usermod -aG docker vagrant
     curl -L "https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    sudo chmod +x /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
     docker --version
     docker-compose --version
 
@@ -128,6 +129,10 @@ Vagrant.configure("2") do |config|
     sed -i 's/colorscheme github/colorscheme badwolf/g' ~/.vimrc
     vim +PluginInstall +qall &> /dev/null
 
+    # configure localhost to access docker services by name
+    sudo sed -i '/127.0.0.1\tlocalhost/a 127.0.0.1\tdb' /etc/hosts
+    sudo sed -i '/127.0.0.1\tlocalhost/a 127.0.0.1\tstore' /etc/hosts
+
     # setup tmux
     cp /vagrant/setup/.tmux.conf ~/.
 
@@ -139,8 +144,9 @@ Vagrant.configure("2") do |config|
     cp /vagrant/setup/.gitconfig ~/.gitconfig
 
     # compress file as much as possible to prepare for upload
-    # sudo apt-get clean
-    # sudo dd if=/dev/zero of=/EMPTY bs=1M
-    # sudo rm -f /EMPTY
+    sudo apt-get autoremove -y
+    sudo apt-get clean
+    sudo dd if=/dev/zero of=/EMPTY bs=1M
+    sudo rm -f /EMPTY
   SCRIPT
 end
