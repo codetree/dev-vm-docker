@@ -68,6 +68,9 @@ bindkey '^r' history-incremental-search-backward
 export GOPATH=$HOME/dev/go
 export PATH=$GOPATH/bin:$PATH
 
+# aws setup
+export PATH=$PATH:$HOME/.local/bin
+
 # rbenv setup
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"

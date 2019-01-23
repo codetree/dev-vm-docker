@@ -78,6 +78,16 @@ end
 
     # add current heroku tools
     apt-get install -y  heroku
+
+    # add python and pip
+    apt-get install -y python3-pip python3-venv
+
+    # add aws and eb
+    pip3 install awscli --upgrade --user
+    pip3 install awsebcli --upgrade --user
+
+    # uninstall old nodejs version (pre v8)
+    apt-get remove -y nodejs
   SHELL
 
   config.vm.provision "shell",
