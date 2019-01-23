@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider "virtualbox" do |vb|
       vb.name = "dev-vm-docker"
-      vb.memory = "1536"
+      vb.memory = "2046"
       vb.cpus = 2
       vb.customize ['modifyvm', :id, '--vram', '16']
       vb.customize ['modifyvm', :id, '--vrde', 'off']
@@ -43,7 +43,6 @@ end
     sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main"
     curl -sSL https://cli-assets.heroku.com/apt/release.key | sudo apt-key add -
     sudo add-apt-repository "deb https://cli-assets.heroku.com/branches/stable/apt ./"
-
 
     # update packages
     apt-get update -y
@@ -110,16 +109,13 @@ end
 
     eval "$(rbenv init -)"
 
-    rbenv install 2.5.1
-    rbenv global 2.5.1
+    rbenv install 2.5.3
+    rbenv global 2.5.3
 
     rbenv rehash
 
     # install bundler
     gem install bundler
-
-    # load foreman for running Procfiles
-    gem install foreman
 
     git clone https://github.com/ac21/vimfiles.git ~/.vim
     git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
@@ -132,6 +128,7 @@ end
     # configure localhost to access docker services by name
     sudo sed -i '/127.0.0.1\tlocalhost/a 127.0.0.1\tdb' /etc/hosts
     sudo sed -i '/127.0.0.1\tlocalhost/a 127.0.0.1\tstore' /etc/hosts
+    sudo sed -i '/127.0.0.1\tlocalhost/a 127.0.0.1\tsearch' /etc/hosts
 
     # setup tmux
     cp /vagrant/setup/.tmux.conf ~/.
