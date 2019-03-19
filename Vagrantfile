@@ -35,9 +35,9 @@ end
                       inline: <<-SHELL
 
     # add yarn, docker, and heroku keys and repositories
-    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+    curl -sSL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
     add-apt-repository "deb https://dl.yarnpkg.com/debian/ stable main"
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+    curl -sSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
     add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
     curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
     sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main"
@@ -50,6 +50,10 @@ end
     # upgrade packages asap
     apt-get upgrade -y
 
+    # install jemalloc for better memory utilization and performance
+    # utilize jemalloc through LD_PRELOAD env variable, similar to production usage
+    apt-get install -y libjemalloc-dev
+
     # install DKMS for virtual box
     apt-get install -y virtualbox-dkms
 
@@ -59,7 +63,7 @@ end
     # install docker & docker-compose
     apt-get install -y docker-ce
     usermod -aG docker vagrant
-    curl -L "https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    curl -sSL "https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
     chmod +x /usr/local/bin/docker-compose
     docker --version
     docker-compose --version
@@ -107,8 +111,7 @@ end
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 
     # install Node v8
-    # nvm install --no-progress v8.10.0  # awaiting v0.33.12
-    nvm install v8.10.0
+    nvm install --no-progress v8.10.0
 
     # configure rbenv and install ruby versions
     git clone https://github.com/rbenv/rbenv.git ~/.rbenv
@@ -120,12 +123,13 @@ end
     eval "$(rbenv init -)"
 
     rbenv install 2.5.3
-    rbenv global 2.5.3
+    rbenv install 2.4.5
+    rbenv global 2.4.5
 
     rbenv rehash
 
     # install bundler
-    gem install bundler
+    gem install bundler -v 1.17.3
 
     git clone https://github.com/ac21/vimfiles.git ~/.vim
     git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
@@ -139,6 +143,9 @@ end
     sudo sed -i '/127.0.0.1\tlocalhost/a 127.0.0.1\tdb' /etc/hosts
     sudo sed -i '/127.0.0.1\tlocalhost/a 127.0.0.1\tstore' /etc/hosts
     sudo sed -i '/127.0.0.1\tlocalhost/a 127.0.0.1\tsearch' /etc/hosts
+
+    # install circleci cli
+    curl -fLSs https://circle.ci/cli | sudo bash
 
     # setup tmux
     cp /vagrant/setup/.tmux.conf ~/.
