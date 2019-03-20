@@ -57,8 +57,9 @@ end
     # install DKMS for virtual box
     apt-get install -y virtualbox-dkms
 
-    # shell and rbenv dependencies
+    # zsh shell and rbenv dependencies
     apt-get install -y build-essential zsh zsh-syntax-highlighting
+    curl -sSL "https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh" | sh
 
     # install docker & docker-compose
     apt-get install -y docker-ce
@@ -98,12 +99,15 @@ end
                       privileged: false,
                       env: { DEBIAN_FRONTEND: "noninteractive" },
                       inline: <<-SCRIPT
+
     # configure ZSH and make default prompt
-    cp /vagrant/setup/.zshrc ~/.
     mkdir ~/.bin
-    curl -sSL https://github.com/djl/vcprompt/raw/master/bin/vcprompt > ~/.bin/vcprompt
-    chmod 755 ~/.bin/vcprompt
+    cp /vagrant/setup/.zshrc ~/.
+    sudo sed -i -e 's|/home/vagrant:/bin/bash|/home/vagrant:/usr/bin/zsh|g' /etc/passwd
+
+    # create symbolic link to python 3
     ln -s /usr/bin/python3 $HOME/.bin/python
+    ln -s /usr/bin/pip3 $HOME/.bin/pip
 
     # install Node Version Manager; works as of pre-v0.33.12
     curl -sSLo- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | sh
@@ -149,9 +153,6 @@ end
 
     # setup tmux
     cp /vagrant/setup/.tmux.conf ~/.
-
-    #update default shell to zsh
-    sudo sed -i -e 's|/home/vagrant:/bin/bash|/home/vagrant:/usr/bin/zsh|g' /etc/passwd
 
     # copy user experience files
     cp /vagrant/setup/.Guardfile ~/.Guardfile
