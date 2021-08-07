@@ -84,7 +84,7 @@ end
     # add current heroku tools
     apt-get install -y  heroku
 
-    # add python and pip
+    # add pip3 and the python virtual environment provider
     apt-get install -y python3-pip python3-venv
 
     # add aws and eb
