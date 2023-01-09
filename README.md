@@ -1,22 +1,18 @@
 # DEV-VM-DOCKER
 
-Build the Box/Package for the Default Ruby Dev Environment.
+Build the Box/Package for the Default  Dev Environment.
 
-Base Configuration is:
+## Base Configuration
 
-1. Ubuntu 16.04
-2. Ruby 2.4/2.5
-3. Nodejs 8.10
-
+1. Docker
+1. Ruby via rbenv
+1. Node via nvm
+1. Python via pyenv
+1. AWS & EB CLI's
 
 ## Setup
 
-1. Fork this directory
-2. Install Vagrant `https://www.vagrantup.com/`
-3. Install VirtualBox `https://www.virtualbox.org/`
-4. Install VBGuest to keep Guest Additions in sync.  `vagrant plugin install vagrant-vbguest`
-5. Install vagrant-dns to enable dns resolution from host to guest. `vagrant plugin install vagrant-dns`
-6. start vagrant with `vagrant up` to build and configure the box image
-7. restart box image after completion. `vagrant halt && vagrant up`
-8. Login into vagrant using 'vagrant ssh`
-
+1. Clone this directory `git clone git@github.com:codetree/dev-vm-docker`
+1. Install [rbenv](https://github.com/rbenv/rbenv#basic-git-checkout). Be sure to install `ruby-build`
+1. Install [nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+1. Install [pyenv](https://github.com/pyenv/pyenv-installer#installation--update--uninstallation).

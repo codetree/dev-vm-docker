@@ -1,0 +1,10 @@
+neww -n codetree -c ~/repos/codetree
+splitw -h
+splitw -h
+selectl even-horizontal
+selectp -t 0
+splitw -v
+selectp -t 2
+splitw -v
+selectp -t 4
+splitw -v
