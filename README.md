@@ -1,18 +1,24 @@
-# DEV-VM-DOCKER
+# DEV VM Configuration
+Establish the development environment for Codetree projects
 
-Build the Box/Package for the Default  Dev Environment.
+1. Linux Mint 21.1 (base configuration)
+
 
 ## Base Configuration
 
-1. Docker
+1. Basic linux config
+  1. vim
+  1. zsh shell
+  1. tmux
+  1. git
 1. Ruby via rbenv
 1. Node via nvm
 1. Python via pyenv
+1. VS Code
+1. Docker
 1. AWS & EB CLI's
 
 ## Setup
 
-1. Clone this directory `git clone git@github.com:codetree/dev-vm-docker`
-1. Install [rbenv](https://github.com/rbenv/rbenv#basic-git-checkout). Be sure to install `ruby-build`
-1. Install [nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-1. Install [pyenv](https://github.com/pyenv/pyenv-installer#installation--update--uninstallation).
+1. Clone this directory
+1. Run setup.sh for the preferred install base; e.g., `./linuxmint-21.1/setup.sh`

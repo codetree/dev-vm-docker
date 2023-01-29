@@ -19,7 +19,7 @@ export EDITOR=vim
 export CLICOLOR=1
 export LESS="-irNF"
 unset LESS_IS_MORE
-export PAGER="less"
+export PAGER="more"
 
 # History Options
 export HISTSIZE=1200
@@ -50,6 +50,17 @@ export NVM_DIR="$HOME/.nvm"
 export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
+
+gi-cfp () {
+  git checkout $1
+  git fetch origin
+  git pull
+}
+
+gi-ch () {
+  git checkout -b $1
+  git push -u origin $1
+}
 
 # define aliases
 alias ls='ls -G'
